@@ -36,6 +36,12 @@ export class MatchConstraint implements ValidatorConstraintInterface {
 }
 
 export class SignupDto {
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
   @IsEmail()
   @Transform(({ value }) => value.toLowerCase())
   email: string;

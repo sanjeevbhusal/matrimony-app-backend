@@ -28,17 +28,32 @@ export class AuthenticationService {
       },
     });
   }
+  // if a user has signed up then, the user should be redirected to onboarding page.
 
-  async createUser(email: string, password: string): Promise<void> {
+  // what if the user refreshes the page. The user should still be in the onbiarding page.
+
+  // This means, we should know when a  user has completed the onboarding step and when it hasn't.
+
+  // user fetch  ->  intrests.
+  // if intrests is not found, then onboarding is not complete
+
+  // if intrests is found, then search for next step of onboarding.
+
+  async createUser(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+  ): Promise<User> {
     const user = await this.findByEmail(email);
 
     if (user) {
-      throw new ConflictException({ email: 'Email already in use' });
+      throw new ConflictException('Email already in use');
     }
 
     const hashedPassword = await this.password.hashPassword(password);
-    await this.prisma.user.create({
-      data: { email, password: hashedPassword },
+    return await this.prisma.user.create({
+      data: { firstName, lastName, email, password: hashedPassword },
     });
   }
 
@@ -46,7 +61,7 @@ export class AuthenticationService {
     const user = await this.findByEmail(email);
 
     if (!user) {
-      throw new NotFoundException({ email: 'Email doesnot exist' });
+      throw new NotFoundException('Email doesnot exist');
     }
 
     const isPasswordValid = await this.password.validatePassword(
@@ -61,7 +76,7 @@ export class AuthenticationService {
     return this.generateTokens({ userId: user.id });
   }
 
-  private generateTokens(payload: { userId: string }): Token {
+  generateTokens(payload: { userId: string }): Token {
     return {
       accessToken: this.generateAccessToken(payload),
       refreshToken: this.generateRefreshToken(payload),
