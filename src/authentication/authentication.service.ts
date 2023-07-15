@@ -39,25 +39,26 @@ export class AuthenticationService {
 
   // if intrests is found, then search for next step of onboarding.
 
-  async createUser(
+  async signup(
     firstName: string,
     lastName: string,
     email: string,
     password: string,
   ): Promise<User> {
-    const user = await this.findByEmail(email);
+    const existingUser = await this.findByEmail(email);
 
-    if (user) {
+    if (existingUser) {
       throw new ConflictException('Email already in use');
     }
 
     const hashedPassword = await this.password.hashPassword(password);
+
     return await this.prisma.user.create({
       data: { firstName, lastName, email, password: hashedPassword },
     });
   }
 
-  async login(email: string, password: string): Promise<Token> {
+  async login(email: string, password: string): Promise<User> {
     const user = await this.findByEmail(email);
 
     if (!user) {
@@ -73,7 +74,7 @@ export class AuthenticationService {
       throw new UnauthorizedException('Password is invalid');
     }
 
-    return this.generateTokens({ userId: user.id });
+    return user;
   }
 
   generateTokens(payload: { userId: string }): Token {

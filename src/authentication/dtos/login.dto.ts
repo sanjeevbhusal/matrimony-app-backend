@@ -1,4 +1,4 @@
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class LoginDto {
@@ -6,5 +6,6 @@ export class LoginDto {
   @Transform(({ value }) => value.toLowerCase())
   email: string;
 
+  @IsNotEmpty()
   password: string;
 }

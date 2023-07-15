@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationController } from './authentication.controller';
 import { PrismaService } from 'src/prisma.service';
@@ -6,6 +6,7 @@ import { PasswordService } from './password.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SecurityConfig, Config } from 'src/common/configs/config.interface';
+import * as cookieParser from 'cookie-parser';
 
 @Module({
   providers: [AuthenticationService, PrismaService, PasswordService],
@@ -25,4 +26,12 @@ import { SecurityConfig, Config } from 'src/common/configs/config.interface';
     }),
   ],
 })
-export class AuthenticationModule {}
+export class AuthenticationModule implements NestModule {
+  constructor(private configService: ConfigService<Config>) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    const secretKey = this.configService.get('security').secretKey as string;
+    console.log(secretKey);
+    consumer.apply(cookieParser(secretKey)).forRoutes('*');
+  }
+}

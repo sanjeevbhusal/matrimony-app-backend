@@ -11,15 +11,44 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String
-  lastName  String
-  email     String @unique
-  password  String
-  role      Role   @default(User)
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  firstName         String
+  lastName          String
+  email             String     @unique
+  password          String
+  bio               String?
+  Address           String?
+  HighestEducation  String?
+  CurrentProfession String?
+  interests         Interest[]
+  age               Int?
+  role              Role       @default(USER)
 }
 
 enum Role {
-  User
-  Admin
+  USER
+  ADMIN
+}
+
+enum Interest {
+  TRAVEL
+  SPORTS
+  READING
+  MUSIC
+  MOVIES
+  COOKING
+  ART
+  PHOTOGRAPHY
+  OUTDOOR
+  HIKING
+  GAMING
+  FASHION
+  DANCING
+  TECHNOLOGY
+  FOOD
+  VOLUNTEER
+  PETS
+  YOGA
+  WRITING
+  GARDENING
 }
