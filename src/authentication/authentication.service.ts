@@ -11,6 +11,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SecurityConfig } from 'src/common/configs/config.interface';
 import { Token } from './interface/token';
+import { MailService } from 'src/mail/mail.service';
+import { EmailType } from 'src/mail/interface/emailType';
 
 @Injectable()
 export class AuthenticationService {
@@ -19,6 +21,7 @@ export class AuthenticationService {
     private readonly password: PasswordService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly mail: MailService,
   ) {}
 
   private findByEmail(email: string): Promise<User | null> {
@@ -53,9 +56,57 @@ export class AuthenticationService {
 
     const hashedPassword = await this.password.hashPassword(password);
 
-    return await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: { firstName, lastName, email, password: hashedPassword },
     });
+
+    this.mail.sendMail(user.email, EmailType.Welcome);
+
+    return user;
+  }
+
+  async validateResetPasswordToken(tokenToValidate: string) {
+    // TODO: Make sure this token is not used twice.
+
+    const token = await this.prisma.token.findFirst({
+      where: {
+        token: tokenToValidate,
+      },
+    });
+
+    if (token.used) {
+      throw new UnauthorizedException('Token has already been used');
+    }
+
+    try {
+      return this.jwtService.verify(tokenToValidate);
+    } catch (error) {
+      throw new UnauthorizedException('token is invalid');
+    }
+  }
+
+  async resetPassword(newPassword: string, token: string) {
+    const { email } = await this.validateResetPasswordToken(token);
+
+    const user = await this.prisma.user.update({
+      data: {
+        password: newPassword,
+      },
+      where: {
+        email,
+      },
+    });
+
+    await this.prisma.token.update({
+      data: {
+        used: true,
+      },
+      where: {
+        token,
+      },
+    });
+
+    return user;
   }
 
   async login(email: string, password: string): Promise<User> {
@@ -75,6 +126,16 @@ export class AuthenticationService {
     }
 
     return user;
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('User doesnot Exist');
+    }
+
+    this.mail.sendMail(user.email, EmailType.ResetPassword);
   }
 
   generateTokens(payload: { userId: string }): Token {

@@ -25,6 +25,11 @@ model User {
   role              Role       @default(USER)
 }
 
+model Token {
+  token String  @id @map("_id")
+  used  Boolean @default(false)
+}
+
 enum Role {
   USER
   ADMIN

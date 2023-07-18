@@ -2,6 +2,7 @@ export interface Config {
   nest: NestConfig;
   cors: CorsConfig;
   security: SecurityConfig;
+  mail: MailConfig;
 }
 
 export interface NestConfig {
@@ -17,4 +18,9 @@ export interface SecurityConfig {
   expiresIn: string;
   refreshIn: string;
   saltRound: number | string;
+}
+
+export interface MailConfig {
+  email: string;
+  password: string;
 }

@@ -7,9 +7,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SecurityConfig, Config } from 'src/common/configs/config.interface';
 import * as cookieParser from 'cookie-parser';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
-  providers: [AuthenticationService, PrismaService, PasswordService],
+  providers: [
+    AuthenticationService,
+    PrismaService,
+    PasswordService,
+    MailService,
+  ],
   controllers: [AuthenticationController],
   imports: [
     JwtModule.registerAsync({
