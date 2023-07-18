@@ -88,9 +88,11 @@ export class AuthenticationService {
   async resetPassword(newPassword: string, token: string) {
     const { email } = await this.validateResetPasswordToken(token);
 
+    const hashedPassword = await this.password.hashPassword(newPassword);
+
     const user = await this.prisma.user.update({
       data: {
-        password: newPassword,
+        password: hashedPassword,
       },
       where: {
         email,
