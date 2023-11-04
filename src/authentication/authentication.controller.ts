@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Get, Res, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Res,
+  Query,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignupDto } from './dtos/signup.dto';
 import { LoginDto } from './dtos/login.dto';
@@ -14,6 +22,7 @@ import { ResetPasswordDto } from './dtos/resetPassword.dto';
 export class AuthenticationController {
   constructor(private auth: AuthenticationService) {}
 
+  @HttpCode(201)
   @Post('/signup')
   async signup(
     @Body() { firstName, lastName, email, password }: SignupDto,
@@ -24,6 +33,7 @@ export class AuthenticationController {
     return user;
   }
 
+  @HttpCode(200)
   @Post('/login')
   async login(
     @Body() { email, password }: LoginDto,
@@ -34,27 +44,42 @@ export class AuthenticationController {
     return user;
   }
 
+  @HttpCode(200)
   @Post('/forgot-password')
-  forgotPassword(@Body() { email }: ForgotPasswordDto): Promise<void> {
+  forgotPassword(
+    @Body() { email }: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
     return this.auth.forgotPassword(email);
   }
 
-  @Post('/resetPassword')
+  @HttpCode(200)
+  @Post('/reset-password')
   resetPassword(
     @Body() { password }: ResetPasswordDto,
     @Query() { token }: ResetPasswordQueryDto,
-  ) {
+  ): Promise<{ message: string }> {
     return this.auth.resetPassword(password, token);
   }
 
-  @Get('/resetPassword/validateToken')
-  validateResetPasswordToken(@Query() { token }: ResetPasswordQueryDto) {
-    return this.auth.validateResetPasswordToken(token);
+  @HttpCode(200)
+  @Get('/verify-reset-password-token')
+  async validateResetPasswordToken(
+    @Query() { token }: ResetPasswordQueryDto,
+  ): Promise<{ message: string }> {
+    await this.auth.validateResetPasswordToken(token);
+    return { message: 'Token has been verified succesfully' };
   }
 
-  @Get('/get_user_from_token')
+  @HttpCode(200)
+  @Get('/current-user')
   @Auth()
   getUserFromToken(@UserEntity() user: User): User {
     return user;
+  }
+
+  @HttpCode(200)
+  @Post('/logout')
+  logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('userId');
   }
 }

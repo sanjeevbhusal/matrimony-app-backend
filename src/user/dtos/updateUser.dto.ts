@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Interest } from '@prisma/client';
 
 class UpdateUserDto {
@@ -9,6 +9,22 @@ class UpdateUserDto {
   @IsOptional()
   @IsString()
   bio: string;
+
+  @IsOptional()
+  @IsNumber()
+  age: number;
+
+  @IsOptional()
+  @IsString()
+  highestEducation: string;
+
+  @IsOptional()
+  @IsString()
+  currentProfession: string;
+
+  @IsOptional()
+  @IsString()
+  currentAddress: string;
 }
 
 export { UpdateUserDto };

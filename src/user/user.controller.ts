@@ -7,10 +7,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Patch(':id')
-  updateUser(
-    @Param('id') id: string,
-    @Body() { interests, bio }: UpdateUserDto,
-  ) {
-    return this.userService.updateUser({ interests, bio }, id);
+  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return this.userService.updateUser(body, id);
   }
 }

@@ -37,7 +37,6 @@ export class AuthenticationModule implements NestModule {
 
   configure(consumer: MiddlewareConsumer) {
     const secretKey = this.configService.get('security').secretKey as string;
-    console.log(secretKey);
     consumer.apply(cookieParser(secretKey)).forRoutes('*');
   }
 }
