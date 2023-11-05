@@ -16,6 +16,14 @@ export class UserService {
     return this.prisma.user.findMany();
   }
 
+  async getUser(id: string) {
+    return this.prisma.user.findFirst({
+      where: {
+        id,
+      },
+    });
+  }
+
   async updateUser(propertiesToUpdate: Partial<UpdateUserDto>, id: string) {
     if (!ObjectID.isValid(id)) {
       throw new BadRequestException('Format of User Id is incorrect');
