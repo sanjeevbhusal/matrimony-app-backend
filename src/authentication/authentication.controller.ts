@@ -40,7 +40,9 @@ export class AuthenticationController {
     @Res({ passthrough: true }) response: Response,
   ): Promise<User> {
     const user = await this.auth.login(email, password);
-    response.cookie('userId', user.id, { signed: true });
+    response.cookie('userId', user.id, {
+      signed: true,
+    });
     return user;
   }
 

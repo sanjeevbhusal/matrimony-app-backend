@@ -12,6 +12,10 @@ import { UpdateUserDto } from './dtos/updateUser.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  async getUsers() {
+    return this.prisma.user.findMany();
+  }
+
   async updateUser(propertiesToUpdate: Partial<UpdateUserDto>, id: string) {
     if (!ObjectID.isValid(id)) {
       throw new BadRequestException('Format of User Id is incorrect');
