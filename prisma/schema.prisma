@@ -22,7 +22,32 @@ model User {
   currentProfession String?
   interests         Interest[]
   age               Int?
+  facebookUrl       String?
+  instagramUrl      String?
   role              Role       @default(USER)
+  // Chats             Chat[]
+
+  chatIds String[] @map("chatIds") @db.ObjectId
+  chats   Chat[]   @relation(fields: [chatIds], references: [id])
+}
+
+//  a chat is not just limited to one user. 
+// when you fetch a user, you should also be able to fetch all their chats.
+
+// a chat cannot exist without user. Hence, chat should have a relation to user.
+
+// a chat can belong to more than 1 user
+// a user can belong to more than 1 chat.
+
+// When you visit a chat, you should be able to fetch the users involved.
+
+model Chat {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userIds   String[] @db.ObjectId
+  users     User[]   @relation(fields: [userIds], references: [id])
+  // messages  Message[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Token {

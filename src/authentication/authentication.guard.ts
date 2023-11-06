@@ -15,6 +15,8 @@ export class AuthenticationGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const userId = request.signedCookies.userId;
 
+    console.log('user id: ', userId);
+
     if (userId === undefined) {
       throw new UnauthorizedException('User Id is not present in Session');
     }
@@ -26,6 +28,13 @@ export class AuthenticationGuard implements CanActivate {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
+      },
+      include: {
+        chats: {
+          include: {
+            users: true,
+          },
+        },
       },
     });
 
