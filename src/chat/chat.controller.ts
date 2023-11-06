@@ -1,12 +1,16 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { Auth } from 'src/common/decorators/routes/auth.decorator';
+import { User as UserEntity } from 'src/common/decorators/params/user.decorator';
+import { User } from '@prisma/client';
 
-@Controller('chat')
+@Controller('chats')
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
   @Get('/')
-  getChats(@Query('userId') userId: string) {
-    return this.chatService.getChats(userId);
+  @Auth()
+  getChats(@UserEntity() user: User) {
+    return this.chatService.getChats(user.id);
   }
 }
