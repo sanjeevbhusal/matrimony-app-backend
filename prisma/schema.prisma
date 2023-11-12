@@ -42,12 +42,21 @@ model User {
 // When you visit a chat, you should be able to fetch the users involved.
 
 model Chat {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userIds   String[] @db.ObjectId
-  users     User[]   @relation(fields: [userIds], references: [id])
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userIds   String[]  @db.ObjectId
+  users     User[]    @relation(fields: [userIds], references: [id])
   // messages  Message[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Message   Message[]
+}
+
+model Message {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  chatId  String @db.ObjectId
+  chat    Chat   @relation(fields: [chatId], references: [id])
+  message String
+  sentBy  String @db.ObjectId
 }
 
 model Token {
