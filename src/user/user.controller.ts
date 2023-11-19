@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dtos/updateUser.dto';
+import { User } from 'src/common/decorators/params/user.decorator';
+import { User as UserEntity } from '@prisma/client';
+import { Auth } from 'src/common/decorators/routes/auth.decorator';
 
 @Controller('users')
 export class UserController {
@@ -12,8 +15,10 @@ export class UserController {
   }
 
   @Get('/')
-  getUsers() {
-    return this.userService.getUsers();
+  @Auth()
+  getUsers(@User() user: UserEntity, @Query('all') all: string) {
+    console.log(all);
+    return this.userService.getUsers(user, all);
   }
 
   @Get('/:id')

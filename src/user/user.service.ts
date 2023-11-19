@@ -12,8 +12,60 @@ import { UpdateUserDto } from './dtos/updateUser.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getUsers() {
-    return this.prisma.user.findMany();
+  async getUsers(currentUser: User, all: string) {
+    // How do you calculate which profile should be shown to the user.
+    // If there are some interest matching, we can consider those profiles.
+    // If user is from the same address, we can consider those profiles.
+    // If user is within +-5 years of age, we can consider those profiles.
+
+    // Calculate the score associated with each profile.
+    // Return the top 10 profile with the highest score.
+
+    const users = await this.prisma.user.findMany();
+    console.log({ all });
+
+    if (all === 'true') {
+      return users;
+    }
+
+    const userScoresMapping = [];
+
+    users.forEach((user) => {
+      let score = 0;
+
+      if (user.currentAddress === currentUser.currentAddress) {
+        score += 10;
+      }
+
+      if (user.age >= currentUser.age - 5 || user.age <= currentUser.age + 5) {
+        score += 10;
+      }
+
+      user.interests.forEach((interest) => {
+        if (currentUser.interests.includes(interest)) {
+          score += 10;
+        }
+      });
+
+      userScoresMapping.push({
+        [user.id]: score,
+      });
+    });
+
+    const sortedUserScoresMapping = userScoresMapping.sort((a, b) => {
+      const aScore = a[Object.keys(a)[0]];
+      const bScore = b[Object.keys(b)[0]];
+      return bScore - aScore;
+    });
+
+    const sortedUsers = [];
+
+    for (let i = 0; i < 10; i++) {
+      const userId = Object.keys(sortedUserScoresMapping[i])[0];
+      sortedUsers.push(users.find((user) => user.id === userId));
+    }
+
+    return sortedUsers;
   }
 
   async getUser(id: string) {
