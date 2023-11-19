@@ -33,6 +33,7 @@ export class AuthenticationGuard implements CanActivate {
             users: true,
           },
         },
+        likes: true,
       },
     });
 

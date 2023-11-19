@@ -16,9 +16,13 @@ export class UserController {
 
   @Get('/')
   @Auth()
-  getUsers(@User() user: UserEntity, @Query('all') all: string) {
+  getUsers(
+    @User() user: UserEntity,
+    @Query('all') all: string,
+    @Query('liked') liked: string,
+  ) {
     console.log(all);
-    return this.userService.getUsers(user, all);
+    return this.userService.getUsers(user, all, liked);
   }
 
   @Get('/:id')

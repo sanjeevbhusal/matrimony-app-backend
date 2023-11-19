@@ -30,6 +30,8 @@ model User {
 
   chatIds String[] @map("chatIds") @db.ObjectId
   chats   Chat[]   @relation(fields: [chatIds], references: [id])
+
+  likes Like[]
 }
 
 //  a chat is not just limited to one user. 
@@ -91,4 +93,15 @@ enum Interest {
   yoga
   writing
   gardening
+}
+
+// give me all the users whose userId is same as the liked userId.
+
+model Like {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  likedBy String @db.ObjectId
+  liked   String @db.ObjectId
+
+  // likedByUser User @relation(fields: [likedBy], references: [id])
+  likedUser User @relation(fields: [liked], references: [id])
 }

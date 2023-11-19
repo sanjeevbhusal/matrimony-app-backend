@@ -12,7 +12,7 @@ import { UpdateUserDto } from './dtos/updateUser.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getUsers(currentUser: User, all: string) {
+  async getUsers(currentUser: User, all: string, liked: string) {
     // How do you calculate which profile should be shown to the user.
     // If there are some interest matching, we can consider those profiles.
     // If user is from the same address, we can consider those profiles.
@@ -20,6 +20,20 @@ export class UserService {
 
     // Calculate the score associated with each profile.
     // Return the top 10 profile with the highest score.
+
+    if (liked) {
+      const users = await this.prisma.like.findMany({
+        where: {
+          likedBy: currentUser.id,
+        },
+        select: {
+          likedUser: true,
+        },
+      });
+
+      const likedUsers = users.map((user) => user.likedUser);
+      return likedUsers;
+    }
 
     const users = await this.prisma.user.findMany();
     console.log({ all });
