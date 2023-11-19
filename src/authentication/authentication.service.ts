@@ -49,6 +49,8 @@ export class AuthenticationService {
       throw new NotFoundException('Email doesnot exist');
     }
 
+    console.log(password, user.password);
+
     const isPasswordValid = await this.password.validatePassword(
       password,
       user.password,
