@@ -24,6 +24,7 @@ model User {
   age               Int?
   facebookUrl       String?
   instagramUrl      String?
+  image             String?
   role              Role       @default(USER)
   // Chats             Chat[]
 

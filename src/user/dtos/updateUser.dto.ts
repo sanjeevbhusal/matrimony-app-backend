@@ -25,6 +25,10 @@ class UpdateUserDto {
   @IsOptional()
   @IsString()
   currentAddress: string;
+
+  @IsOptional()
+  @IsString()
+  image: string;
 }
 
 export { UpdateUserDto };
