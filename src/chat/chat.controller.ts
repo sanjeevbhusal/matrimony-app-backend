@@ -10,8 +10,14 @@ export class ChatController {
 
   @Get('/')
   @Auth()
-  getChats(@UserEntity() user: User) {
-    return this.chatService.getChats(user.id);
+  getChats(@UserEntity() user: User, @Query('userId') userId: string) {
+    return this.chatService.getChats(user.id, userId);
+  }
+
+  @Get('/:chatId')
+  @Auth()
+  getChat(@UserEntity() user: User, @Param('chatId') chatId: string) {
+    return this.chatService.getChat(chatId);
   }
 
   @Post('/')

@@ -6,11 +6,14 @@ export class MessageService {
   constructor(private prisma: PrismaService) {}
 
   async getMessages(chatId: string) {
-    return this.prisma.message.findMany({
+    console.log(chatId);
+    const messages = await this.prisma.message.findMany({
       where: {
-        chatId,
+        chatId: chatId,
       },
     });
+    console.log(messages);
+    return messages;
   }
 
   async postMessage(body: any) {

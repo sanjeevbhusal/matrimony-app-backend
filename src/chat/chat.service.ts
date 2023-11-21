@@ -5,11 +5,44 @@ import { PrismaService } from 'src/prisma.service';
 export class ChatService {
   constructor(private prisma: PrismaService) {}
 
-  async getChats(userId: string) {
+  async getChat(chatId: string) {
+    return this.prisma.chat.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        users: true,
+      },
+    });
+  }
+
+  async getChats(firstUserId: string, secondUserId: string) {
+    if (secondUserId) {
+      return this.prisma.chat.findMany({
+        where: {
+          OR: [
+            {
+              userIds: {
+                equals: [firstUserId, secondUserId],
+              },
+            },
+            {
+              userIds: {
+                equals: [secondUserId, firstUserId],
+              },
+            },
+          ],
+        },
+        include: {
+          users: true,
+        },
+      });
+    }
+
     return this.prisma.chat.findMany({
       where: {
         userIds: {
-          has: userId,
+          has: firstUserId,
         },
       },
       include: {
