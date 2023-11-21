@@ -83,5 +83,6 @@ export class AuthenticationController {
   @Post('/logout')
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('userId');
+    return { success: true };
   }
 }
